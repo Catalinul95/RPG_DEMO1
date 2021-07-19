@@ -17,12 +17,18 @@
     let loaded = 0;
 
     let direction = "down";
+    let lives = 3;
 
     let mapX = 0;
     let mapY = 0;
 
+
+
     const sword = new Image();
     sword.src = 'sword.png';
+
+    const heart = new Image();
+    heart.src = 'heart.png';
 
     const grass1 = new Image();
     grass1.src = 'grass-test.png';
@@ -182,6 +188,10 @@
         }
 
         ctx.drawImage(canvas2, mapX, mapY);
+
+        for (let i = 0; i < lives; i ++) {
+            ctx.drawImage(heart, i * 32, 0, 32, 32);
+        }
 
         if (keyDown[32]) {
             if (direction == "down") {
