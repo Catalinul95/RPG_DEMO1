@@ -16,8 +16,13 @@
     const keyDown = {};
     let loaded = 0;
 
+    let direction = "down";
+
     let mapX = 0;
     let mapY = 0;
+
+    const sword = new Image();
+    sword.src = 'sword.png';
 
     const grass1 = new Image();
     grass1.src = 'grass-test.png';
@@ -177,6 +182,23 @@
         }
 
         ctx.drawImage(canvas2, mapX, mapY);
+
+        if (keyDown[32]) {
+            if (direction == "down") {
+                ctx.drawImage(sword, 48, 0, 16, 16, playerAnim.options.x + 16, playerAnim.options.y + 64 + 25, 64, 64);
+            }
+            if (direction == "up") {
+                ctx.drawImage(sword, 32, 0, 16, 16, playerAnim.options.x + 16, playerAnim.options.y - 48, 64, 64);
+            }
+
+            if (direction == "left") {
+                ctx.drawImage(sword, 16, 0, 16, 16, playerAnim.options.x - 32, playerAnim.options.y + 32, 64, 64);
+            }
+
+            if (direction == "right") {
+                ctx.drawImage(sword, 0, 0, 16, 16, playerAnim.options.x + 64, playerAnim.options.y + 32, 64, 64);
+            }
+        }
         
         if (keyDown[40]) {
             if (mapY <= -320 || (mapY >= -320 && playerAnim.options.y < (640 / 2 -32))) {
@@ -188,6 +210,7 @@
             
             playerAnim.play('walkingDown', delta, ctx);
             playerAnim.options.direction = 'down-idle';
+            direction = "down";
         } else if (keyDown[38]) {
             if (mapY >= 0 || (mapY <= 0 && playerAnim.options.y > (640 / 2 -32))) {
                 playerAnim.options.y -= 0.1 * delta;
@@ -198,6 +221,7 @@
             
             playerAnim.play('walkingUp', delta, ctx);
             playerAnim.options.direction = 'up-idle';
+            direction = "up";
         } else if (keyDown[37]) {
             if (mapX >= 0 || (mapX <= 0 && playerAnim.options.x > (640 / 2 -32))) {
                 playerAnim.options.x -= 0.1 * delta;
@@ -206,6 +230,7 @@
             }
             playerAnim.play('walkingLeft', delta, ctx);
             playerAnim.options.direction = 'left-idle';
+            direction = "left"
         } else if (keyDown[39]) {
             if (mapX <= -320 || (mapX >= -320 && playerAnim.options.x < (640 / 2 -32))) {
                 playerAnim.options.x += 0.1 * delta;
@@ -214,6 +239,7 @@
             }
             playerAnim.play('walkingRight', delta, ctx);
             playerAnim.options.direction = 'right-idle';
+            direction = "right";
         } else {
             playerAnim.play(playerAnim.options.direction, delta, ctx);
         }

@@ -2,7 +2,7 @@ function SpriteAnimation(options) {
     this.plays = [];
     this.currentFrame = 0;
     this.totalFramesNum = 0;
-    this.currentPlay = undefined
+    this.currentPlay = undefined;
     this.spriteSheet = new Image();
     this.spriteLoaded = false;
     this.currentDuration;
