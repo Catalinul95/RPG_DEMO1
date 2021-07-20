@@ -92,6 +92,33 @@
         }
     }
 
+    const enemyAnim = new SpriteAnimation({
+        sprite: 'enemy1.png',
+        frameWidth: 32,
+        frameHeight: 32,
+        ctx: ctx,
+        x: (640 / 2 - 32) + 100,
+        y: (640 / 2 - 32) - 100,
+        direction: 'walkingDown',
+        width: 96,
+        height: 96,
+    });
+    enemyDirection = "down";
+
+    enemyAnim.setPlay('walkingDown', [
+        {x: 0, y: 0, duration: 160},
+        {x: 32, y: 0, duration: 160},
+        {x: 64, y: 0, duration: 160},
+        {x: 0, y: 0, duration: 160},
+    ]);
+
+    enemyAnim.setPlay('walkingUp', [
+        {x: 0, y: 32, duration: 160},
+        {x: 32, y: 32, duration: 160},
+        {x: 64, y: 32, duration: 160},
+        {x: 0, y: 32, duration: 160},
+    ]);
+
     const playerAnim = new SpriteAnimation({
         sprite: 'player.png',
         frameWidth: 32,
@@ -103,6 +130,7 @@
         width: 96,
         height: 96,
     });
+    
 
     playerAnim.setPlay('walkingDown', [
         {x: 0, y: 0, duration: 160},
@@ -191,6 +219,20 @@
 
         for (let i = 0; i < lives; i ++) {
             ctx.drawImage(heart, i * 32, 0, 32, 32);
+        }
+
+        if (enemyAnim.options.y < 540 && enemyDirection == "down") {
+            enemyAnim.play("walkingDown", delta, ctx);
+            enemyAnim.options.y += 0.1 * delta;
+        } else {
+            enemyDirection = "up";
+        }
+        
+        if (enemyAnim.options.y >= 220 && enemyDirection == "up") {
+            enemyAnim.play("walkingUp", delta, ctx);
+            enemyAnim.options.y -= 0.1 * delta;
+        } else {
+            enemyDirection = "down";
         }
 
         if (keyDown[32]) {
