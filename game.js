@@ -22,6 +22,11 @@
     let mapX = 0;
     let mapY = 0;
 
+    let vDirection =  {
+        x: 0,
+        y: 0,
+    };
+
 
 
     const sword = new Image();
@@ -71,25 +76,40 @@
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     ];
 
+    for (let row = 0; row < map.length; row++) {
+        for (let column = 0; column < map[0].length; column++) {
+            map[row][column] = Math.floor(Math.random() * grass.length);
+        }
+    }
+
     function drawMap(ctx) {
         for (let row = 0; row < map.length; row++) {
             for (let column = 0; column < map[0].length; column++) {
-                if (map[row][column] == 0) {
-                    ctx.drawImage(
-                        grass[Math.floor(Math.random() * grass.length)],
-                        0,
-                        0,
-                        16,
-                        16,
-                        64 * column,
-                        64 * row,
-                        64,
-                        64
-                    );
-                    //ctx.strokeRect(256 *column, 256 * row, 256, 256)
-                } 
+                ctx.drawImage(
+                    grass[map[row][column]],
+                    0,
+                    0,
+                    16,
+                    16,
+                    64 * column + mapX,
+                    64 * row + mapY,
+                    64,
+                    64
+                );
+                //ctx.strokeRect(256 *column, 256 * row, 256, 256) 
             } 
         }
+    }
+
+    function unitVector(v) {
+        let length = Math.sqrt(v.x * v.x + v.y * v.y);
+        var v1 = {x: 0, y: 0};
+        if (length) {
+            v1.x = v.x / length;
+            v1.y = v.y / length;
+        }
+        
+        return v1;
     }
 
     const enemyAnim = new SpriteAnimation({
@@ -97,13 +117,12 @@
         frameWidth: 32,
         frameHeight: 32,
         ctx: ctx,
-        x: (640 / 2 - 32) + 100,
-        y: (640 / 2 - 32) - 100,
+        x: 120,
+        y: 100,
         direction: 'walkingDown',
         width: 96,
         height: 96,
     });
-    enemyDirection = "down";
 
     enemyAnim.setPlay('walkingDown', [
         {x: 0, y: 0, duration: 160},
@@ -118,6 +137,35 @@
         {x: 64, y: 32, duration: 160},
         {x: 0, y: 32, duration: 160},
     ]);
+
+    enemyAnim.setPlay('walkingLeft', [
+        {x: 0, y: 64, duration: 160},
+        {x: 32, y: 64, duration: 160},
+        {x: 64, y: 64, duration: 160},
+        {x: 0, y: 64, duration: 160},
+    ]);
+
+    enemyAnim.setPlay('walkingRight', [
+        {x: 0, y: 96, duration: 160},
+        {x: 32, y: 96, duration: 160},
+        {x: 64, y: 96, duration: 160},
+        {x: 0, y: 96, duration: 160},
+    ]);
+
+    enemyAnim.setPlay('down-idle', [
+        {x: 32, y: 0, duration: 160},
+    ]);
+    enemyAnim.setPlay('up-idle', [
+        {x: 32, y: 32, duration: 160},
+    ]);
+
+    enemyAnim.setPlay('left-idle', [
+        {x: 32, y: 64, duration: 160},
+    ]);
+    enemyAnim.setPlay('right-idle', [
+        {x: 32, y: 96, duration: 160},
+    ]);
+    enemyAnim.options.direction = 'down-idle';
 
     const playerAnim = new SpriteAnimation({
         sprite: 'player.png',
@@ -194,10 +242,7 @@
             delta = currentTime - lastTime;
         }
 
-        if (loaded == 3) {
-            drawMap(ctx2);
-            loaded = 0;
-        }
+        drawMap(ctx);
 
         if (mapX <= -320) {
             mapX = -320;
@@ -215,24 +260,19 @@
             mapY = 0;
         }
 
-        ctx.drawImage(canvas2, mapX, mapY);
+        vDirection.x = playerAnim.options.x - enemyAnim.options.x;
+        vDirection.y = playerAnim.options.y - enemyAnim.options.y;
+        vDirection = unitVector(vDirection);
+
+        enemyAnim.options.x += (0.1 * delta) * vDirection.x;
+        enemyAnim.options.y += (0.1 * delta) * vDirection.y;
+
+    
+
+        enemyAnim.play("walkingDown", delta, ctx);
 
         for (let i = 0; i < lives; i ++) {
             ctx.drawImage(heart, i * 32, 0, 32, 32);
-        }
-
-        if (enemyAnim.options.y < 540 && enemyDirection == "down") {
-            enemyAnim.play("walkingDown", delta, ctx);
-            enemyAnim.options.y += 0.1 * delta;
-        } else {
-            enemyDirection = "up";
-        }
-        
-        if (enemyAnim.options.y >= 220 && enemyDirection == "up") {
-            enemyAnim.play("walkingUp", delta, ctx);
-            enemyAnim.options.y -= 0.1 * delta;
-        } else {
-            enemyDirection = "down";
         }
 
         if (keyDown[32]) {
@@ -256,7 +296,8 @@
             if (mapY <= -320 || (mapY >= -320 && playerAnim.options.y < (640 / 2 -32))) {
                 playerAnim.options.y += 0.1 * delta;
             } else {
-                mapY -= 0.1 * delta;
+                mapY -= 0.2 * delta;
+                enemyAnim.options.y -= 0.1 * delta;
             }
            
             
@@ -265,9 +306,10 @@
             direction = "down";
         } else if (keyDown[38]) {
             if (mapY >= 0 || (mapY <= 0 && playerAnim.options.y > (640 / 2 -32))) {
-                playerAnim.options.y -= 0.1 * delta;
+                playerAnim.options.y -= 0.2 * delta;
             } else {
-                mapY += 0.1 * delta;
+                mapY += 0.2 * delta;
+                enemyAnim.options.y += 0.1 * delta;
             }
             
             
@@ -276,18 +318,20 @@
             direction = "up";
         } else if (keyDown[37]) {
             if (mapX >= 0 || (mapX <= 0 && playerAnim.options.x > (640 / 2 -32))) {
-                playerAnim.options.x -= 0.1 * delta;
+                playerAnim.options.x -= 0.2 * delta;
             } else {
-                mapX += 0.1 * delta;
+                mapX += 0.2 * delta;
+                enemyAnim.options.x += 0.1 * delta;
             }
             playerAnim.play('walkingLeft', delta, ctx);
             playerAnim.options.direction = 'left-idle';
             direction = "left"
         } else if (keyDown[39]) {
             if (mapX <= -320 || (mapX >= -320 && playerAnim.options.x < (640 / 2 -32))) {
-                playerAnim.options.x += 0.1 * delta;
+                playerAnim.options.x += 0.2 * delta;
             } else {
-                mapX -= 0.1 * delta;
+                mapX -= 0.2 * delta;
+                enemyAnim.options.x -= 0.1 * delta;
             }
             playerAnim.play('walkingRight', delta, ctx);
             playerAnim.options.direction = 'right-idle';
