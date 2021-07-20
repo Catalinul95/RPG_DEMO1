@@ -101,8 +101,9 @@
         }
     }
 
+    let length;
     function unitVector(v) {
-        let length = Math.sqrt(v.x * v.x + v.y * v.y);
+        length = Math.sqrt(v.x * v.x + v.y * v.y);
         var v1 = {x: 0, y: 0};
         if (length) {
             v1.x = v.x / length;
@@ -264,13 +265,21 @@
         vDirection.y = playerAnim.options.y - enemyAnim.options.y;
         vDirection = unitVector(vDirection);
 
-        enemyAnim.options.x += (0.1 * delta) * vDirection.x;
-        enemyAnim.options.y += (0.1 * delta) * vDirection.y;
+        if (length < 200) {
+            enemyAnim.options.x += (0.1 * delta) * vDirection.x;
+            enemyAnim.options.y += (0.1 * delta) * vDirection.y;
+
+            enemyAnim.play("walkingDown", delta, ctx);
+
+        } else {
+            enemyAnim.play("down-idle", delta, ctx);
+        }
+
+        
 
     
 
-        enemyAnim.play("walkingDown", delta, ctx);
-
+        
         for (let i = 0; i < lives; i ++) {
             ctx.drawImage(heart, i * 32, 0, 32, 32);
         }
@@ -297,7 +306,13 @@
                 playerAnim.options.y += 0.1 * delta;
             } else {
                 mapY -= 0.2 * delta;
-                enemyAnim.options.y -= 0.1 * delta;
+                
+                if (length < 200) {
+                    enemyAnim.options.y -= 0.1 * delta;
+                } else {
+                    enemyAnim.options.y -= 0.2 * delta;
+                }
+               
             }
            
             
@@ -309,7 +324,12 @@
                 playerAnim.options.y -= 0.2 * delta;
             } else {
                 mapY += 0.2 * delta;
-                enemyAnim.options.y += 0.1 * delta;
+                if (length < 200) {
+                    enemyAnim.options.y += 0.1 * delta;
+                }  else {
+                    enemyAnim.options.y += 0.2 * delta;
+                }
+               
             }
             
             
@@ -321,7 +341,11 @@
                 playerAnim.options.x -= 0.2 * delta;
             } else {
                 mapX += 0.2 * delta;
-                enemyAnim.options.x += 0.1 * delta;
+                if (length < 200) {
+                    enemyAnim.options.x += 0.1 * delta;
+                } else {
+                    enemyAnim.options.x += 0.2 * delta;
+                }
             }
             playerAnim.play('walkingLeft', delta, ctx);
             playerAnim.options.direction = 'left-idle';
@@ -331,7 +355,11 @@
                 playerAnim.options.x += 0.2 * delta;
             } else {
                 mapX -= 0.2 * delta;
-                enemyAnim.options.x -= 0.1 * delta;
+                if (length < 200) {
+                    enemyAnim.options.x -= 0.1 * delta;
+                } else {
+                    enemyAnim.options.x -= 0.2 * delta;
+                }
             }
             playerAnim.play('walkingRight', delta, ctx);
             playerAnim.options.direction = 'right-idle';
