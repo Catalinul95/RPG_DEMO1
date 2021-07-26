@@ -34,6 +34,7 @@
 
     const heart = new Image();
     heart.src = 'heart.png';
+    
 
     const grass1 = new Image();
     grass1.src = 'grass-test.png';
@@ -169,61 +170,61 @@
     enemyAnim.options.direction = 'down-idle';
 
     const playerAnim = new SpriteAnimation({
-        sprite: 'player.png',
-        frameWidth: 32,
-        frameHeight: 32,
+        sprite: 'newplayer.png',
+        frameWidth: 64,
+        frameHeight: 64,
         ctx: ctx,
         x: (640 / 2 - 32),
         y: (640 / 2 - 32),
         direction: 'walkingDown',
-        width: 96,
-        height: 96,
+        width: 128,
+        height: 128,
     });
     
 
     playerAnim.setPlay('walkingDown', [
         {x: 0, y: 0, duration: 160},
-        {x: 32, y: 0, duration: 160},
         {x: 64, y: 0, duration: 160},
+        {x: 128, y: 0, duration: 160},
         {x: 0, y: 0, duration: 160},
     ]);
 
     playerAnim.setPlay('walkingUp', [
-        {x: 0, y: 32, duration: 160},
-        {x: 32, y: 32, duration: 160},
-        {x: 64, y: 32, duration: 160},
-        {x: 0, y: 32, duration: 160},
+        {x: 0, y: 64, duration: 160},
+        {x: 64, y: 64, duration: 160},
+        {x: 128, y: 64, duration: 160},
+        {x: 0, y: 64, duration: 160},
     ]);
 
     playerAnim.setPlay('walkingLeft', [
-        {x: 0, y: 64, duration: 160},
-        {x: 32, y: 64, duration: 160},
-        {x: 64, y: 64, duration: 160},
-        {x: 0, y: 64, duration: 160},
+        {x: 0, y: 128, duration: 160},
+        {x: 64, y: 128, duration: 160},
+        {x: 128, y: 128, duration: 160},
+        {x: 0, y: 128, duration: 160},
     ]);
 
     playerAnim.setPlay('walkingRight', [
-        {x: 0, y: 96, duration: 160},
-        {x: 32, y: 96, duration: 160},
-        {x: 64, y: 96, duration: 160},
-        {x: 0, y: 96, duration: 160},
+        {x: 0, y: 192, duration: 160},
+        {x: 64, y: 192, duration: 160},
+        {x: 128, y: 192, duration: 160},
+        {x: 0, y: 192, duration: 160},
     ]);
 
     playerAnim.setPlay('down-idle', [
-        {x: 32, y: 0, duration: 160},
+        {x: 64, y: 0, duration: 160},
     ]);
     playerAnim.setPlay('up-idle', [
-        {x: 32, y: 32, duration: 160},
+        {x: 64, y: 64, duration: 160},
     ]);
 
     playerAnim.setPlay('left-idle', [
-        {x: 32, y: 64, duration: 160},
+        {x: 64, y: 128, duration: 160},
     ]);
     playerAnim.setPlay('right-idle', [
-        {x: 32, y: 96, duration: 160},
+        {x: 64, y: 192, duration: 160},
     ]);
 
-    playerAnim.options.direction = 'down-idle';
+    playerAnim.options.direction = 'left-idle';
 
     document.addEventListener('keydown',  (e) => {
         keyDown[e.keyCode] = true;
